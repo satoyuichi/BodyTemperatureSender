@@ -8,11 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var beginDate = Date()
+    @State private var endDate = Date()
+    @State private var aggregateUnit = 1
+    @State private var samplingMethod = 1
+    @State private var isOutputDate = true
+
     var body: some View {
         VStack {
             HStack {
+                DatePicker("開始", selection: $beginDate, displayedComponents: [.date])
+                DatePicker("終了", selection: $endDate, displayedComponents: [.date])
+            }
+
+            HStack {
                 Text("集計単位")
-                Picker(selection: /*@START_MENU_TOKEN@*/.constant(1)/*@END_MENU_TOKEN@*/, label: /*@START_MENU_TOKEN@*/Text("Picker")/*@END_MENU_TOKEN@*/) {
+                Picker(selection: $aggregateUnit, label: /*@START_MENU_TOKEN@*/Text("Picker")/*@END_MENU_TOKEN@*/) {
                     Text("日").tag(1)
                     Text("週").tag(2)
                     Text("月").tag(3)
@@ -20,8 +31,8 @@ struct ContentView: View {
             }
 
             HStack {
-                Text("ピポッド")
-                Picker(selection: /*@START_MENU_TOKEN@*/.constant(1)/*@END_MENU_TOKEN@*/, label: /*@START_MENU_TOKEN@*/Text("Picker")/*@END_MENU_TOKEN@*/) {
+                Text("サンプル")
+                Picker(selection: $samplingMethod, label: /*@START_MENU_TOKEN@*/Text("Picker")/*@END_MENU_TOKEN@*/) {
                     Text("最高").tag(1)
                     Text("平均").tag(2)
                     Text("最低").tag(3)
@@ -29,16 +40,16 @@ struct ContentView: View {
             }
             
             GroupBox(label: Text("出力")) {
-                Toggle(isOn: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Is On@*/.constant(true)/*@END_MENU_TOKEN@*/) {
+                Toggle(isOn: $isOutputDate) {
                     Text("年月日")
                 }
             }
             
-            Button(action: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Action@*/{}/*@END_MENU_TOKEN@*/) {
+            Button(action: {
+            }) {
                 Text("送信")
             }
         }
-
     }
 }
 
