@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import HealthKit
 
 struct ContentView: View {
     @State private var beginDate = Date()
@@ -49,6 +50,35 @@ struct ContentView: View {
             }) {
                 Text("送信")
             }
+        }
+        .onAppear {
+            initBeginDate()
+        }
+    }
+
+    func initBeginDate () {
+        let cal = Calendar.current
+
+        let year = cal.component(.year, from: beginDate)
+        if year <= 3 {
+            beginDate = cal.date(byAdding: .year, value: -1, to: cal.startOfDay(for: beginDate))!
+        }
+        beginDate = cal.date(bySetting: .month, value: 4, of: beginDate)!
+        beginDate = cal.date(bySetting: .day, value: 1, of: beginDate)!
+    }
+
+    func sendAirDrop () {
+        let healthStore = HKHealthStore()
+        let allTypes = Set([HKObjectType.quantityType(forIdentifier: .bodyTemperature)!])
+
+        if HKHealthStore.isHealthDataAvailable() {
+            healthStore.requestAuthorization(toShare: allTypes, read: allTypes) { (success, error) in
+                if !success {
+                    // Handle the error here.
+                }
+            }
+            
+//            let query = HKSampleQuery(sampleType: <#T##HKSampleType#>, predicate: <#T##NSPredicate?#>, limit: <#T##Int#>, sortDescriptors: <#T##[NSSortDescriptor]?#>, resultsHandler: <#T##(HKSampleQuery, [HKSample]?, Error?) -> Void#>)
         }
     }
 }

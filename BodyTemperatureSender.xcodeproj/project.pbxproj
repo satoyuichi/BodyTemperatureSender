@@ -14,6 +14,7 @@
 		3F0591B226BC17BD003AD766 /* BodyTemperatureSenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0591B126BC17BD003AD766 /* BodyTemperatureSenderTests.swift */; };
 		3F0591BD26BC17BD003AD766 /* BodyTemperatureSenderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0591BC26BC17BD003AD766 /* BodyTemperatureSenderUITests.swift */; };
 		3F393DDF26BE7C0500B1C696 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F393DDE26BE7C0500B1C696 /* HealthKit.framework */; };
+		3F865F2926C3F53D00FF4746 /* HealthKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F865F2726C2B7E100FF4746 /* HealthKitUI.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		3F0591BE26BC17BD003AD766 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3F393DDC26BE7C0500B1C696 /* BodyTemperatureSender.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BodyTemperatureSender.entitlements; sourceTree = "<group>"; };
 		3F393DDE26BE7C0500B1C696 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		3F865F2726C2B7E100FF4746 /* HealthKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKitUI.framework; path = System/Library/Frameworks/HealthKitUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F393DDF26BE7C0500B1C696 /* HealthKit.framework in Frameworks */,
+				3F865F2926C3F53D00FF4746 /* HealthKitUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +142,7 @@
 		3F393DDD26BE7C0500B1C696 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3F865F2726C2B7E100FF4746 /* HealthKitUI.framework */,
 				3F393DDE26BE7C0500B1C696 /* HealthKit.framework */,
 			);
 			name = Frameworks;
