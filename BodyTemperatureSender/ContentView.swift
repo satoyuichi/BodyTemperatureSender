@@ -39,15 +39,14 @@ struct ContentView: View {
                     Text("最低").tag(3)
                 }
             }
-            
+
             GroupBox(label: Text("出力")) {
                 Toggle(isOn: $isOutputDate) {
                     Text("年月日")
                 }
             }
-            
-            Button(action: {
-            }) {
+
+            Button(action: { sendAirDrop() }) {
                 Text("送信")
             }
         }
@@ -58,13 +57,15 @@ struct ContentView: View {
 
     func initBeginDate () {
         let cal = Calendar.current
+        let month = cal.component(.month, from: endDate)
+        let year = cal.component(.year, from: endDate)
 
-        let year = cal.component(.year, from: beginDate)
-        if year <= 3 {
-            beginDate = cal.date(byAdding: .year, value: -1, to: cal.startOfDay(for: beginDate))!
+//        beginDate = cal.date(bySetting: .day, value: 1, of: endDate)
+//        beginDate = cal.date(bySetting: .month, value: 4, of: beginDate)
+//        beginDate = cal.date(bySetting: .year, value: year, of: beginDate)
+        if month <= 3 {
+            beginDate = cal.date(bySetting: .year, value: year - 1, of: cal.startOfDay(for: beginDate))!
         }
-        beginDate = cal.date(bySetting: .month, value: 4, of: beginDate)!
-        beginDate = cal.date(bySetting: .day, value: 1, of: beginDate)!
     }
 
     func sendAirDrop () {
@@ -77,8 +78,37 @@ struct ContentView: View {
                     // Handle the error here.
                 }
             }
-            
-//            let query = HKSampleQuery(sampleType: <#T##HKSampleType#>, predicate: <#T##NSPredicate?#>, limit: <#T##Int#>, sortDescriptors: <#T##[NSSortDescriptor]?#>, resultsHandler: <#T##(HKSampleQuery, [HKSample]?, Error?) -> Void#>)
+
+            guard let sampleType = HKSampleType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyTemperature) else {
+                fatalError()
+            }
+            let predicate = HKQuery.predicateForSamples(withStart: beginDate, end: endDate, options: [])
+            let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) {
+                query, results, error in
+
+                guard let samples = results as? [HKQuantitySample] else {
+                    return
+                }
+
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateStyle = .medium
+                dateFormatter.timeStyle = .none
+                dateFormatter.locale = Locale(identifier: "ja_JP")
+                var contents = ""
+                for sample in samples {
+                    if isOutputDate {
+                        contents.append("\(dateFormatter.string(from: sample.startDate)), ")
+
+                    }
+                    contents.append("\(sample.quantity.doubleValue(for: .degreeCelsius()))\n")
+                }
+                let tmpPath = NSTemporaryDirectory() + "BodyTemperatureSender"
+                FileManager.default.createFile(atPath: tmpPath, contents: contents.data(using: .utf8), attributes: nil)
+                print(tmpPath)
+                print(contents)
+            }
+
+            healthStore.execute(query)
         }
     }
 }
