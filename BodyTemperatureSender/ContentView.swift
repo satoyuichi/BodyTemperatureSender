@@ -9,10 +9,22 @@ import SwiftUI
 import HealthKit
 
 struct ContentView: View {
+    enum AggregateUnit: Int {
+        case day = 1
+        case week
+        case month
+    }
+
+    enum SamplingMethod: Int {
+        case max = 1
+        case average
+        case min
+    }
+
     @State private var beginDate = Date()
     @State private var endDate = Date()
-    @State private var aggregateUnit = 1
-    @State private var samplingMethod = 1
+    @State private var aggregateUnit: AggregateUnit = .day
+    @State private var samplingMethod: SamplingMethod = .max
     @State private var isOutputDate = true
     @State private var contents:String = ""
     @State private var isSharePresent = false
@@ -27,18 +39,18 @@ struct ContentView: View {
             HStack {
                 Text("集計単位")
                 Picker(selection: $aggregateUnit, label: /*@START_MENU_TOKEN@*/Text("Picker")/*@END_MENU_TOKEN@*/) {
-                    Text("日").tag(1)
-                    Text("週").tag(2)
-                    Text("月").tag(3)
+                    Text("日").tag(AggregateUnit.day)
+                    Text("週").tag(AggregateUnit.week)
+                    Text("月").tag(AggregateUnit.month)
                 }
             }
 
             HStack {
                 Text("サンプル")
                 Picker(selection: $samplingMethod, label: /*@START_MENU_TOKEN@*/Text("Picker")/*@END_MENU_TOKEN@*/) {
-                    Text("最高").tag(1)
-                    Text("平均").tag(2)
-                    Text("最低").tag(3)
+                    Text("最高").tag(SamplingMethod.max)
+                    Text("平均").tag(SamplingMethod.average)
+                    Text("最低").tag(SamplingMethod.min)
                 }
             }
 
@@ -95,23 +107,30 @@ struct ContentView: View {
                     return
                 }
 
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateStyle = .medium
-                dateFormatter.timeStyle = .none
-                dateFormatter.locale = Locale(identifier: "ja_JP")
-                for sample in samples {
-                    if isOutputDate {
-                        contents.append("\(dateFormatter.string(from: sample.startDate)), ")
-
-                    }
-                    contents.append("\(sample.quantity.doubleValue(for: .degreeCelsius()))\n")
-                }
+                contents = formatContents (samples)
 
                 isSharePresent = true
             }
 
             healthStore.execute(query)
         }
+    }
+
+    func formatContents (_ samples:[HKQuantitySample]) -> String {
+        var content: String = ""
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        dateFormatter.locale = Locale(identifier: "ja_JP")
+        for sample in samples {
+            if isOutputDate {
+                content.append("\(dateFormatter.string(from: sample.startDate)), ")
+
+            }
+            content.append("\(sample.quantity.doubleValue(for: .degreeCelsius()))\n")
+        }
+
+        return content
     }
 }
 
