@@ -14,6 +14,8 @@ struct ContentView: View {
     @State private var aggregateUnit = 1
     @State private var samplingMethod = 1
     @State private var isOutputDate = true
+    @State private var contents:String = ""
+    @State private var isSharePresent = false
 
     var body: some View {
         VStack {
@@ -46,12 +48,15 @@ struct ContentView: View {
                 }
             }
 
-            Button(action: { sendAirDrop() }) {
+            Button(action: { sendShareData() }) {
                 Text("送信")
             }
         }
         .onAppear {
             initBeginDate()
+        }
+        .sheet(isPresented: $isSharePresent) {
+            ShareSheet(contents: $contents)
         }
     }
 
@@ -68,7 +73,7 @@ struct ContentView: View {
         }
     }
 
-    func sendAirDrop () {
+    func sendShareData () {
         let healthStore = HKHealthStore()
         let allTypes = Set([HKObjectType.quantityType(forIdentifier: .bodyTemperature)!])
 
@@ -94,7 +99,6 @@ struct ContentView: View {
                 dateFormatter.dateStyle = .medium
                 dateFormatter.timeStyle = .none
                 dateFormatter.locale = Locale(identifier: "ja_JP")
-                var contents = ""
                 for sample in samples {
                     if isOutputDate {
                         contents.append("\(dateFormatter.string(from: sample.startDate)), ")
@@ -102,14 +106,39 @@ struct ContentView: View {
                     }
                     contents.append("\(sample.quantity.doubleValue(for: .degreeCelsius()))\n")
                 }
-                let tmpPath = NSTemporaryDirectory() + "BodyTemperatureSender"
-                FileManager.default.createFile(atPath: tmpPath, contents: contents.data(using: .utf8), attributes: nil)
-                print(tmpPath)
-                print(contents)
+
+                isSharePresent = true
             }
 
             healthStore.execute(query)
         }
+    }
+}
+
+struct ShareSheet: UIViewControllerRepresentable {
+    @Binding var contents: String
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let activityItems: [Any] = [contents]
+
+        let controller = UIActivityViewController(
+            activityItems: activityItems,
+            applicationActivities: nil)
+
+        let excludedActivityTypes = [
+            UIActivity.ActivityType.postToTwitter,
+            UIActivity.ActivityType.message,
+            UIActivity.ActivityType.saveToCameraRoll,
+            UIActivity.ActivityType.postToFacebook,
+            UIActivity.ActivityType.print
+        ]
+
+        controller.excludedActivityTypes = excludedActivityTypes
+
+        return controller
+    }
+
+    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {
     }
 }
 
